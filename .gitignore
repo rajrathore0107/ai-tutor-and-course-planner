@@ -1,0 +1,51 @@
+# ========================
+# SECRETS — NEVER COMMIT
+# ========================
+.env
+.env.local
+.env.*.local
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-log.txt
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+*.log
+
+# ChromaDB persistent storage
+backend/chroma_store/
+
+# Node
+node_modules/
+dist/
+.DS_Store
+*.local
+.vite/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Uploads (temp files during dev)
+backend/uploads/
+
+# OS
+.DS_Store
+Thumbs.db

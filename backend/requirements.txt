@@ -1,0 +1,31 @@
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+python-dotenv==1.0.1
+python-multipart==0.0.18
+aiofiles==24.1.0
+httpx>=0.26,<0.28
+pydantic==2.10.3
+pydantic-settings==2.6.1
+
+# Database
+supabase==2.10.0
+
+# LLM
+google-generativeai==0.8.3
+
+# Vector store & embeddings
+chromadb==0.5.23
+sentence-transformers==3.3.1
+
+# Document parsing
+pymupdf==1.25.1
+python-pptx==1.0.2
+beautifulsoup4==4.12.3
+requests==2.32.3
+
+# YouTube
+youtube-transcript-api>=1.2.4
+yt-dlp==2024.12.13
+
+# Utilities
+tiktoken==0.8.0

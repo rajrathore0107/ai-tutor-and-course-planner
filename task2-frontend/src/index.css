@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  html, body, #root { height: 100%; margin: 0; padding: 0; }
+  body {
+    background-color: #0F1117;
+    color: #F0F0F5;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #1A1D27; }
+  ::-webkit-scrollbar-thumb { background: #2E3247; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #6C63FF; }
+}
+
+@layer utilities {
+  .diff-beginner     { @apply border-l-4 border-success; }
+  .diff-intermediate { @apply border-l-4 border-warning; }
+  .diff-advanced     { @apply border-l-4 border-error; }
+
+  .diff-pill-beginner     { @apply bg-success/15 text-success border border-success/30; }
+  .diff-pill-intermediate { @apply bg-warning/15 text-warning border border-warning/30; }
+  .diff-pill-advanced     { @apply bg-error/15 text-error border border-error/30; }
+}
