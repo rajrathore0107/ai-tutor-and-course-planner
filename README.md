@@ -18,8 +18,7 @@ A chatbot that grounds every answer strictly in content the user provides.
 - **Multi-source ingestion:** PDF (`pymupdf`), PPTX (`python-pptx`), YouTube transcripts (any caption language, not just English), and public webpages (`httpx` + `BeautifulSoup4`)
 - **RAG pipeline:** Text is chunked, embedded locally with `sentence-transformers` (`all-MiniLM-L6-v2`), and stored in a per-session ChromaDB collection — no full-document prompt dumping
 - **Streaming answers:** Token-by-token via Server-Sent Events
-- **Polished inline citations:** The citation parser converts LLM citation tags (`[SOURCE:pdf:page 4]`) into hidden markdown links *before* the text reaches `ReactMarkdown`, rather than splitting content into separate render fragments. Keeping a single contiguous string flowing through the markdown renderer fixed list-numbering bugs (`1. 1. 1.`) and broken bold/asterisk formatting that occur when markdown context is interrupted mid-stream.
-- **Clickable citations:** Citations render as styled UI badges. YouTube and webpage citations are clickable and open the relevant source.
+- **Polished inline citations:** The citation parser converts LLM citation tags (`[SOURCE:pdf:page 4]`) into hidden markdown links *before* the text reaches `ReactMarkdown`, rather than splitting content into separate render fragments. Keeping a single contiguous string flowing through the markdown renderer fixed list-numbering bugs (`1. 1. 1.`) and broken bold/asterisk formatting that occur when markdown context is interrupted mid-stream. Citations render as styled, color-coded badges (`[📄 page 4]`, `[📊 slide 3]`, `[▶ 3:22]`) so it's immediately clear which source backs each part of the answer — these are visual references, not clickable links.
 - **Session memory:** Follow-up questions retain conversation context
 - **Source management:** Add multiple sources per session, view auto-generated summaries, remove sources individually
 - **Bonus — Quiz Me:** Generates an interactive multiple-choice quiz from everything loaded in the session, with score tracking and answer explanations
@@ -40,6 +39,7 @@ A guided conversational tool that turns a mentor's intent into a structured, edi
 - **Conversational refinement:** "Make module 2 simpler" or "add a project to module 4" updates the live plan
 - **Difficulty progression bar:** Visual beginner → intermediate → advanced indicator across modules
 - **JSON export:** One-click download of the final plan
+- **Always-working resources:** Every lesson resource (YouTube videos, articles, documentation links, practice exercises) is a clickable link. Rather than trusting the LLM's exact URL — which it can't verify since it has no live search access — the frontend converts AI-generated YouTube links into YouTube search links and article/documentation links into Google searches for the resource title. The mentor always lands on a real, relevant page instead of risking a dead or hallucinated link.
 - **Bonus — Syllabus import:** Upload an existing PDF syllabus; parsing runs in a background thread (`asyncio.to_thread`) so the backend stays responsive, and the AI restructures the content into the full schema with resources and assessments.
 
 ---
@@ -74,7 +74,7 @@ edu-assist/
 
 **Local embeddings over an embedding API.** `all-MiniLM-L6-v2` is ~80MB, loads in a couple of seconds, and produces solid retrieval quality with zero per-query cost and no external rate limits.
 
-**Handling LLM-generated resource URLs.** Gemini has no live search access and occasionally invents plausible-but-incorrect URLs, especially 11-character YouTube video IDs. Rather than adding a backend verification/search step that would slow down every course generation, `ResourceLink.jsx` intercepts clicks on resources, and when a URL is invalid, a placeholder, or detectably hallucinated, transparently redirects to a YouTube or Google search using the resource's title instead — so the link is never dead, even when the exact URL wasn't real.
+**Handling LLM-generated resource URLs.** Gemini has no live search access, so any exact URL it produces — especially 11-character YouTube video IDs — is fundamentally unverifiable at generation time. Rather than adding a backend search/verification step that would slow down every course generation, `ResourceLink.jsx` converts AI-generated YouTube links into YouTube search links and article/documentation links into Google searches for the resource's title, before they're ever rendered as clickable. This guarantees every resource a mentor clicks lands on a real, relevant page — the resource *titles and descriptions* come from the LLM, but the *destination* is always a guaranteed-working search rather than a single unverifiable exact URL.
 
 ---
 
@@ -187,7 +187,7 @@ POST   /import-syllabus        Import and restructure an existing PDF syllabus
 
 - **YouTube ingestion requires captions** (manual or auto-generated) in any language — there's no audio transcription fallback for videos with no captions at all.
 - **ChromaDB sessions are in-memory** and are lost on backend restart. A production version would use a persistent vector store with session-namespaced collections.
-- **LLM-generated resource URLs** are not live-verified against the web. The frontend gracefully redirects invalid/hallucinated links to a search query using the resource title, so nothing is ever a dead link — but mentors should still spot-check exact URLs before sharing a plan with students.
+- **Task 2 resource links resolve via search, not exact URLs.** Since Gemini has no live search access, resource titles/descriptions are LLM-generated but the actual link a mentor clicks is always converted to a YouTube or Google search for that title — guaranteed to work, but not necessarily the single exact video or article the LLM "had in mind."
 - **Web scraping** uses static HTTP requests, not a headless browser — heavily JavaScript-rendered pages may not extract cleanly.
 - **No authentication layer** — Supabase RLS is disabled by design for this assignment scope; sessions are identified by UUID only.
 
