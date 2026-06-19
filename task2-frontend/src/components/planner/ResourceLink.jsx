@@ -13,16 +13,17 @@ export default function ResourceLink({ resource }) {
   const cfg = TYPE_CONFIG[resource.type] || TYPE_CONFIG.article
   const Icon = cfg.icon
 
-  // The LLM sometimes generates placeholders like "N/A", "None", or just text instead of a real URL.
-  // If it's not a valid http link, we'll turn it into a helpful Google search link!
-  let href = resource.url || ''
-  if (!href.startsWith('http://') && !href.startsWith('https://')) {
-    if (href.includes('.') && !href.includes(' ')) {
-      href = `https://${href}` // e.g. www.youtube.com/...
-    } else {
-      // Fallback to searching the title
-      href = `https://www.google.com/search?q=${encodeURIComponent(resource.title)}`
-    }
+  // LLMs frequently hallucinate exact URL paths (like YouTube video IDs or Wikipedia pages), 
+  // resulting in 404 Page Not Found errors even if the URL starts with 'https://'.
+  // The ultimate fix is to convert ALL generative resource links into search queries!
+  const isYoutube = resource.type === 'youtube' || (resource.url && (resource.url.includes('youtube.com') || resource.url.includes('youtu.be')))
+  
+  let href = ''
+  if (isYoutube) {
+    href = `https://www.youtube.com/results?search_query=${encodeURIComponent(resource.title)}`
+  } else {
+    // For articles, books, exercises, etc., search Google for the title
+    href = `https://www.google.com/search?q=${encodeURIComponent(resource.title)}`
   }
 
   return (
