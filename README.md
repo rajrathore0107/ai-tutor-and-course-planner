@@ -195,4 +195,4 @@ POST   /import-syllabus        Import and restructure an existing PDF syllabus
 
 ## 🎥 Demo Video
 
-*(Add Loom/screen recording link here)*
+[Watch the full walkthrough on Loom](https://www.loom.com/share/21b5fbf53bdb4908a2c14307dcc39bcb)
