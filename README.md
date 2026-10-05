@@ -192,7 +192,3 @@ POST   /import-syllabus        Import and restructure an existing PDF syllabus
 - **No authentication layer** — Supabase RLS is disabled by design for this assignment scope; sessions are identified by UUID only.
 
 ---
-
-## 🎥 Demo Video
-
-[Watch the full walkthrough on Loom](https://www.loom.com/share/21b5fbf53bdb4908a2c14307dcc39bcb)
